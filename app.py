@@ -19,6 +19,38 @@ db = SQLAlchemy(app)
 #  server_time = time.localtime()
 #  return time.strftime("%I:%M:%S %p", server_time)
 
+def send_email_to_verify(data):
+    body = '''
+    <html>
+
+    <body>
+    <div align="center">
+    <div align="center" style="padding: 50px; border: 1px solid #ccc; width: 30%">
+    <p>Hi Mr(s)''' + data['name'] + ''', </p>
+    <p>Attached is the link to verify your identity</p>
+    <a href="http://rockets.pythonanywhere.com/customers/''' + data['customer_id'] + '''/verify">Verify your identity</a>
+    </div>
+    </div>
+    </body>
+
+    </html>
+    '''
+
+    url = 'https://hook.integromat.com/lboq8sa4cxjkvfck8hhx7fsay1pq3sxo'
+
+    headers = {
+        'X-SECURITY-TOKEN': '12345'
+    }
+
+    data = {
+        'to': data['to'],
+        'subject' : 'Please verify your identity',
+        'body': body
+    }
+
+    #response = requests.post(url, data=data,files=files, headers=headers)
+    response = requests.post(url, data=data, headers=headers)
+
 @app.route('/')
 def index():
     #context = { 'server_time': format_server_time() }
@@ -91,6 +123,12 @@ def create_customer():
   save_item_to_db(contract)
 
   # TODO: Enviar correo con link para aceptar terminos y condiciones
+  
+  send_email_to_verify({
+      'to': data_input['email'],
+      'name': data_input['name'],
+      'customer_id': customer.id
+  })
 
   return jsonify({
       'status': 'OK',
