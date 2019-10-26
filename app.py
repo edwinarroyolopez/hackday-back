@@ -45,7 +45,7 @@ def send_email_to_verify(data):
     <div align="center" style="padding: 50px; border: 1px solid #ccc; width: 30%">
     <p>Hi Mr(s)''' + data['name'] + ''', </p>
     <p>Attached is the link to verify your identity</p>
-    <a href="http://localhost:8080/customers/''' + str(data['customer_id']) + '''/verify">Verify your identity</a>
+    <a href="http://192.168.43.114:8080/contract">Contract</a>
     </div>
     </div>
     </body>
@@ -91,13 +91,28 @@ def get_customers():
     }
   ]
 
+  customers_db = Customer.query.all()
+
+  customers = []
+
+  for item_db in customers_db:
+      item = {
+          'id' : item_db.id,
+          'name': item_db.name,
+          'cellphone': item_db.cellphone,
+          'email': item_db.email,
+          'isverify': item_db.isVerify
+      }
+
+      customers.append(item)
+
   return jsonify(customers)
 
-  @app.route('/customers/{id}/verify', methods = ['GET'])
-def get_customers():
-    id = request.view_args['id']
+  @app.route('/customers/<int:customer_id>/verify')
+  def customer_verify(customer_id):
+    #id = request.view_args['id']
 
-    customer = User.query.get(int(id))
+    customer = User.query.get(customer_id)
     customer.isVerify = True
 
     save_item_to_db(customer)

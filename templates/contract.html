@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Contrato</title>
+
+    <!-- JSPDF -->
+    <script type="text/javascript" src="static/js/jspdf/js/jquery/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="static/js/jspdf/js/jquery/jquery-ui-1.8.17.custom.min.js"></script>
+    <script type="text/javascript" src="static/js/jspdf/jspdf.js"></script>
+    <script type="text/javascript" src="static/js/jspdf/jspdf.plugin.addimage.js"></script>
+    <script type="text/javascript" src="static/js/jspdf/jspdf.plugin.standard_fonts_metrics.js"></script>
+    <script type="text/javascript" src="static/js/jspdf/jspdf.plugin.split_text_to_size.js"></script>
+    <script type="text/javascript" src="static/js/jspdf/jspdf.plugin.from_html.js"></script>
+    <!-- JSPDF -->
+    <script type="text/javascript" src="static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="static/js/html2canvas.js"></script>
+
+    <link rel="stylesheet" href="static/css/contract.css">
+  </head>
+  <body>
+		
+        <div id="page">
+                <div class="encabezado">
+                    <div class="razon_social">AUTORIZACIÓN DE SOLICITUD DE CONSULTA DE ANTECEDENTES</div>
+                </div>
+                <br>
+                <div class="bloque">
+                    <p class="texto">
+                        Yo, <label><u>{NOMBRE_CLIENTE}</u></label> identificado(a) con cédula de
+                        ciudadanía <label><u>{CEDULA_CLIENTE}</u></label> de <label><u>{ORIGEN_CEDULA}</u></label> autorizo de manera
+                        irrevocable a la Superintendencia de Sociedades para que: a) con el fin de
+                        inscribirme como promotor y/o liquidador, y mientras permanezca vigente mi
+                        nombre en la lista oficial de estos auxiliares de la justicia, consulte mis
+                        antecedentes de comportamiento crediticio en la Central de Información del
+                        Sector Financiero (CIFIN) de la Asociación Bancaria o en cualquier otra central
+                        de riesgos o de información, con el fin de que se informe sobre mis relaciones
+                        comerciales pasadas, presentes y futuras y, a la par, b) consulte mis
+                        antecedentes judiciales, disciplinarios y profesionales.
+                    </p>
+                </div>
+                <div class="bloque">
+                    <p class="texto">
+                        Para todos los efectos legales certifico que todos los datos por mi anotados en
+                        la presente solicitud y en la hoja de vida, son veraces y han sido declarados
+                        bajo la gravedad del juramento, que no me encuentro incurso en ninguna de
+                        las causales de impedimento para inscribirme como promotor o liquidador y
+                        que no poseo antecedentes judiciales.
+                    </p>
+                </div>
+                <br>
+                <br>
+        
+                <div class="bloque firma">
+                    <p class="texto">{FIRMA_CLIENTE}</p> 
+                    <p class="texto">C.C. {ID_CLIENTE}</p>
+                </div>
+            </div>
+
+    
+	<script type="text/javascript">
+	
+	$(document).ready(function() {
+
+
+			create_PDF();
+
+
+			function create_PDF(){
+					/* Documento PDF */
+				var pdf = new jsPDF();
+				var page = document.getElementById('page');
+
+				 //return false;
+
+				addPage(page).then(function(pageData){
+
+					console.log('pageData',pageData);
+
+					pdf.addImage(pageData,  'JPEG', 20, 35, 170, 300);
+					var pdf_generado = pdf.output('datauristring');
+
+					console.log('PFDF GENERADO',pdf_generado);
+					/* Link para descargar */
+					var link = document.createElement('a');
+						link.href = pdf_generado;
+						link.download = 'contract.pdf';
+
+						setTimeout(function(){
+							if (document.createEvent) {
+								var event = document.createEvent('MouseEvents');
+								// Simulando clic para descargar
+								event.initMouseEvent("click", true, true, window, 0,
+										0, 0, 0, 0,
+										false, false, false, false,
+										0, null);
+								link.dispatchEvent(event);
+							} else {
+								// Simulando clic para descargar
+								link.click();
+							}
+						},1500)
+				})
+
+
+				
+		}
+		function addPage(domPagina){
+
+				var response = {};
+				var promise = new Promise(function (resolve, reject) {
+
+					html2canvas(domPagina, {onrendered: function(domElementCanvas) {
+
+						// Obteniendo el contexto del canvas ya generado
+						let context = domElementCanvas.getContext('2d');
+						let imgData = domElementCanvas.toDataURL('image/jpeg');
+
+						if(imgData != ''){
+								response = imgData;
+						}
+
+						resolve(response)
+					}
+					});/* html2canvas */
+
+					if (!response) {
+						reject(new Error('No forma la p�gina!'))
+					}
+
+				})/* promise */
+				return promise
+		}/* ## add Page ## */
+	})
+
+
+
+	
+
+</script>
+
+  </body>
+</html>
