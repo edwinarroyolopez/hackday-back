@@ -1,6 +1,7 @@
 from flask import Flask, render_template, make_response, jsonify, request
 import os
 import time
+import requests
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
@@ -28,7 +29,23 @@ def send_email_to_verify(data):
     <div align="center" style="padding: 50px; border: 1px solid #ccc; width: 30%">
     <p>Hi Mr(s)''' + data['name'] + ''', </p>
     <p>Attached is the link to verify your identity</p>
-    <a href="http://rockets.pythonanywhere.com/customers/''' + data['customer_id'] + '''/verify">Verify your identity</a>
+    <a href="http://rockets.pythonanywhere.com/customers/''' + str(data['customer_id']) + '''/verify">Verify your identity</a>
+    </div>
+    </div>
+    </body>
+
+    </html>
+    '''
+
+    body = '''
+    <html>
+
+    <body>
+    <div align="center">
+    <div align="center" style="padding: 50px; border: 1px solid #ccc; width: 30%">
+    <p>Hi Mr(s)''' + data['name'] + ''', </p>
+    <p>Attached is the link to verify your identity</p>
+    <a href="http://localhost:8080/customers/''' + str(data['customer_id']) + '''/verify">Verify your identity</a>
     </div>
     </div>
     </body>
@@ -76,6 +93,19 @@ def get_customers():
 
   return jsonify(customers)
 
+  @app.route('/customers/{id}/verify', methods = ['GET'])
+def get_customers():
+    id = request.view_args['id']
+
+    customer = User.query.get(int(id))
+    customer.isVerify = True
+
+    save_item_to_db(customer)
+
+    print(customer)
+
+    render_template('contract.html')
+
 @app.route('/sendtermsandconditions', methods = ['POST'])
 def send_terms_and_conditions():
   customer_to_create = request.get_json()
@@ -105,7 +135,7 @@ def create_customer():
     email   = data_input['email'],
     gender    = data_input['gender'],
     date_birth    =  data_input['date_birth'],
-    isVerify = 1
+    isVerify = 0
   )
 
   save_item_to_db(customer)
