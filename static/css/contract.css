@@ -1,0 +1,80 @@
+
+      #contenedor {
+        height: 112em;
+        margin: auto;
+        width: 79em;
+    }
+
+    #page {
+        background: #FFF;
+        font-size: 2em;
+        height: 112em;
+        margin: auto;
+        width: 79em;
+        /* size:210mm 297mm ; */
+    }
+
+    /* encabezado */
+    #page div.encabezado div {
+        font-size: 2.5em;
+        text-align: center;
+    }
+
+    /* bloques */
+    #page div.bloque {
+        font-size: 2.4em;
+        margin: auto;
+        text-align: justify;
+    }
+
+    #page div.bloque p.texto {
+        text-align: justify;
+    }
+
+    #page div.firma {
+        margin-top: 800px;
+        text-align: justify;
+    }
+
+    /* tablas */
+    #page table {
+        font-size: 1.6em;
+    }
+
+    #page table,
+    th,
+    td {
+        border: 1px solid black;
+    }
+
+    #page table th {
+        text-align: left;
+    }
+
+    #page table .encabezado {
+        background: #fAA;
+        color: #981014;
+    }
+
+    #page table tr.impar {
+        background: #EEE;
+    }
+
+    #page table .num {
+        text-align: center;
+    }
+
+    #page #firmas,
+    #page #firmas th,
+    #page #firmas td {
+        border: none;
+    }
+
+    #page #firmas {
+        border-top: solid #999;
+        margin: 5em 0 0 0;
+    }
+
+    #page #firmas .b {
+        padding: 0 0 0 10em;
+    }

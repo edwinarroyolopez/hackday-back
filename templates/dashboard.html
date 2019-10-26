@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Rocket app</title>
+    <script type="text/javascript" src="static/js/jspdf/js/jquery/jquery-1.7.1.min.js"></script>
+    <link rel="stylesheet" href="static/css/dashboard.css">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        p{
+            margin:0px !important;
+        }
+    </style>
+    <script>
+        $(document).on('ready', function(){
+
+            loadCustomers()
+
+            setInterval(function(){
+                document.getElementById('card_container').innerHTML = ''
+                loadCustomers()
+            },10000)
+
+            function loadCustomers(){
+                /* load */
+                $.ajax({
+                        url: '/customers',
+                        dataType: 'json',
+                        success: function(data) {
+                            console.log(data);
+                            for(i in data){
+                                console.log('data-i:', data[i])
+                                
+                                var card_content = document.createElement('div')
+                                    card_content.setAttribute('class','w3-third w3-container w3-margin-bottom')
+
+                                var img = document.createElement('img')
+                                    img.setAttribute('class','w3-hover-opacity')
+                                    img.setAttribute('style','width:100%;')
+                                    img.setAttribute('src',' https://place-hold.it/300x100&text=' +data[i].name+ '&bold')
+
+                                    img.setAttribute('alt','Norway')
+                                    card_content.appendChild(img)
+
+                                var detail = document.createElement('div')
+                                    detail.setAttribute('class','w3-container w3-white')
+                            
+
+                                var id = document.createElement('p')
+                                    id.innerHTML = '<b>Id: </b>'+data[i].id
+
+                                // var content_name = document.createElement('p')
+                                // var name = document.createElement('b')
+                                //     name.innerHTML =  data[i].name
+                                //     content_name.appendChild(name)
+                                
+                                var cellphone = document.createElement('p')
+                                    cellphone.innerHTML = '<b>Cellphone: </b>'+ data[i].cellphone
+                                var email = document.createElement('p')
+                                    email.innerHTML ='<b>Email: </b>' + data[i].email
+                                
+                                var isverify = document.createElement('p')
+                                    isverify.innerHTML ='Status: ' + ((data[i].isverify=='1')?'<b style="color: green;">Verified</b>': '<b style="color: red;">Pending</b>')
+
+                                    detail.appendChild(id)
+                                    detail.appendChild(cellphone)
+                                    detail.appendChild(email)
+                                    detail.appendChild(isverify)
+                                    
+                                    card_content.appendChild(detail)
+                                    document.getElementById('card_container').appendChild(card_content)
+                                    
+                            }
+                    }
+                    });
+            }
+            
+
+
+        
+        })
+    </script>
+  </head>
+  <body class="w3-light-grey w3-content" style="max-width:1600px">
+
+
+
+  <!-- Sidebar/menu -->
+  <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:200px;" id="mySidebar"><br>
+    <div class="w3-container">
+      <a href="#" onclick="w3_close()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey"
+        title="close menu">
+        <i class="fa fa-remove"></i>
+      </a>
+      <img src="static/images/logo.jpg" style="width:45%;" class="w3-round"><br><br>
+      <h4><b>ROCKET APP</b></h4>
+    </div>
+    <div class="w3-bar-block">
+      <a href="#clients" onclick="w3_close()" class="w3-bar-item w3-button w3-padding w3-text-teal"><i
+          class="fa fa-th-large fa-fw w3-margin-right"></i>CLIENTS</a>
+  </nav>
+
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+    title="close side menu" id="myOverlay"></div>
+
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main" style="margin-left:300px">
+
+    <!-- Header -->
+    <header id="clients">
+      <a href="#"><img src="https://place-hold.it/300x300" style="width:65px;"
+          class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity"></a>
+      <span class="w3-button w3-hide-large w3-xxlarge w3-hover-text-grey" onclick="w3_open()"><i
+          class="fa fa-bars"></i></span>
+      <div class="w3-container">
+        <h1><b>Customers</b></h1>
+        <div class="w3-section w3-bottombar w3-padding-16">
+        </div>
+      </div>
+    </header>
+
+    <!-- First Photo Grid-->
+    <div class="w3-row-padding"  id="card_container">
+      <!-- <div class="w3-third w3-container w3-margin-bottom">
+        <img src="https://place-hold.it/300x100" alt="Norway" style="width:100%" class="w3-hover-opacity">
+        <div class="w3-container w3-white">
+          <small>{ID_CLIENT}</small>
+          <p><b>{{NAME_CLIENTE}}</b></p>
+          <small>{EMAIL}</small>
+          <small>{CELLPHONE}</small>
+        </div>
+      </div> -->
+    </div>
+
+    <hr>
+    <!-- Footer -->
+    <footer class="w3-container w3-dark-grey">
+      <div align="center" style="margin: 10px">Rocket app</div>
+    </footer>
+
+    <!-- End page content -->
+  </div>
+
+  <script>
+    // Script to open and close sidebar
+    function w3_open() {
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("myOverlay").style.display = "block";
+    }
+
+    function w3_close() {
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("myOverlay").style.display = "none";
+    }
+  </script>
+    
+
+  </body>
+</html>
