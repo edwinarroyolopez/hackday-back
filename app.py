@@ -2,7 +2,18 @@ from flask import Flask, render_template, make_response, jsonify, request
 import os
 import time
 
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import text
+
 app = Flask(__name__)
+
+#Local
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:halo4g2hp@localhost:3306/myboard'
+db = SQLAlchemy(app)
+
+#PDN
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://rockets:jksjdfksdjf847545hHT*@rockets.mysql.pythonanywhere-services.com:3306/rockets$mydatabase'
+#db = SQLAlchemy(app)
 
 #def format_server_time():
 #  server_time = time.localtime()
@@ -50,14 +61,100 @@ def acept_terms_and_conditions():
 
   return render_template('terms-and-conditions-acepted.html', context=contract_info)
 
+#Create a customer
 @app.route('/customers', methods = ['POST'])
 def create_customer():
-  customer_to_create = request.get_json()
+  data_input = request.get_json()
+
+  customer = Customer(
+    name   = data_input['name'],
+    cellphone = data_input['cellphone'],
+    dni = data_input['dni'],
+    email   = data_input['email'],
+    gender    = data_input['gender'],
+    date_birth    =  data_input['date_birth'],
+    isVerify = 1
+  )
+
+  save_item_to_db(customer)
+
+  #Consultar con el email del seller
+  #email_seller = data_input['email_seller']
+  id_seller = 1
+
+  contract = Contract(
+    name = data_input['name'],
+    idSeller = id_seller,
+    idClient = customer.id
+  )
+
+  save_item_to_db(contract)
+
+  # TODO: Enviar correo con link para aceptar terminos y condiciones
 
   return jsonify({
       'status': 'OK',
-      'message': 'Customer created'
+      'message': 'Customer created',
+      'idClient': customer.id,
+      'idContract': contract.id
   })
+
+class Seller(db.Model):
+    __tablename__ = 'sellers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    cellphone = db.Column(db.String(200), nullable=True)
+    #dni = db.Column(db.String(200), nullable=True)
+    email = db.Column(db.String(200), nullable=True)
+    gender = db.Column(db.String(200), nullable=True)
+
+    def __repr__(self):
+        return '<Seller %r>' % self.name
+
+class Customer(db.Model):
+    __tablename__ = 'customers'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    cellphone = db.Column(db.String(200), nullable=True)
+    dni = db.Column(db.String(200), nullable=True)
+    email = db.Column(db.String(200), nullable=True)
+    gender = db.Column(db.String(200), nullable=True)
+    date_birth = db.Column(db.DateTime(), nullable=True)
+    isVerify = db.Column(db.Integer, nullable=False, default=1)
+    idSeller = db.Column(db.Integer)
+
+    def __repr__(self):
+        return '<Customer %r>' % self.name
+
+class Contract(db.Model):
+    __tablename__ = 'contracts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    idSeller = db.Column(db.Integer)
+    idClient = db.Column(db.Integer)
+
+    def __repr__(self):
+        return '<Contract %r>' % self.name
+
+class Document(db.Model):
+    __tablename__ = 'documents'
+
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.Integer)
+    url = db.Column(db.String(200), nullable=True)
+    idSeller = db.Column(db.Integer)
+    idCustomer = db.Column(db.Integer)
+
+    def __repr__(self):
+        return '<Document %r>' % self.name
+
+#Save to BD
+def save_item_to_db(item_to_save):
+    db.session.add(item_to_save)
+    db.session.commit()
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0',port=int(os.environ.get('PORT', 8080)))
