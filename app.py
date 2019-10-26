@@ -137,6 +137,15 @@ def create_customer():
       'idContract': contract.id
   })
 
+
+@app.route('/dashboard', methods = ['GET'])
+def dashboard():
+  return render_template('dashboard.html')
+
+@app.route('/contract', methods = ['GET'])
+def contract():
+  return render_template('contract.html')
+
 class Seller(db.Model):
     __tablename__ = 'sellers'
 
